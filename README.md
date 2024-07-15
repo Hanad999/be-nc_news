@@ -1,7 +1,4 @@
 # Northcoders News API
-As .env.* is added to the .gitignore, anyone who wishes to clone your repo will not have access to the necessary environment variables. Update your readme to explain what files a developer must add in order to successfully connect to the two databases locally.
-
-Edit the README.md to remove the link to the initial instructions. Replace this with instructions on how to create the environment variables for anyone who wishes to clone your project and run it locally.
 
 nc _news project
 
