@@ -1,11 +1,18 @@
-const {gettingtopics} = require('./models')
+const { gettingtopics } = require("./models");
 const express = require("express");
-
-function getTopics(req, res, next){
-    return gettingtopics().then((topics) => {
-        res.status(200).send({topics: topics})
-    }).catch(err => {next(err)})
+const endpoints = require("./endpoints.json");
+function getTopics(req, res, next) {
+  return gettingtopics()
+    .then((topics) => {
+      res.status(200).send({ topics: topics });
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 
+function getAllEndpoints(req, res, next) {
+  res.status(200).send({ endpoints: endpoints });
+}
 
-module.exports = {getTopics}
+module.exports = { getTopics, getAllEndpoints };
