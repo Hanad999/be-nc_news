@@ -80,7 +80,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.length).toBeGreaterThanOrEqual(1);
+        expect(body.articles.length).toBe(13);
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
         body.articles.forEach((article) => {
           expect(article).toMatchObject({
@@ -104,7 +104,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body }) => {
-        expect(body.comments.length).toBeGreaterThanOrEqual(1);
+        expect(body.comments.length).toBe(11);
         body.comments.forEach((eachComment) => {
           expect(eachComment).toMatchObject({
             comment_id: expect.any(Number),
