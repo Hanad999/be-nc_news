@@ -81,7 +81,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles.length).toBeGreaterThanOrEqual(1);
-         expect(body.articles).toBeSortedBy("created_at", { descending: true });
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
         body.articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -94,6 +94,43 @@ describe("GET /api/articles", () => {
             comment_count: expect.any(Number),
           });
         });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("Respond with an array of comments for a given article_id with the correct properties", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBeGreaterThanOrEqual(1);
+        body.comments.forEach((eachComment) => {
+          expect(eachComment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
+  test("Respond 400: Not Found, when given a non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/not-a-number/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("Respond with 200 and empty array when article_id exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
       });
   });
 });

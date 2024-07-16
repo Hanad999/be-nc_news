@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+const { CheckArticleidExists } = require("./db/seeds/utils");
 const format = require("pg-format");
 
 function gettingtopics() {
@@ -49,4 +50,29 @@ function gettingArticleData() {
     });
 }
 
-module.exports = { gettingtopics, gettingArticle, gettingArticleData };
+function gettingAllcommentsById(article_id) {
+  const queryString = `
+        SELECT comment_id, body, votes, author, article_id, created_at
+        FROM comments
+        WHERE article_id = $1
+        ;`;
+  const promiseArr = [db.query(queryString, [article_id])];
+  if (article_id !== undefined) {
+    promiseArr.push(CheckArticleidExists(article_id));
+  }
+  return Promise.all(promiseArr).then((results) => {
+    const queryResult = results[0];
+    const articleIdResult = results[1];
+    if (queryResult.rows.length === 0 && articleIdResult === false) {
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+    return queryResult.rows;
+  });
+}
+
+module.exports = {
+  gettingtopics,
+  gettingArticle,
+  gettingArticleData,
+  gettingAllcommentsById,
+};
