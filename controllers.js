@@ -1,6 +1,11 @@
-const { gettingtopics, gettingArticle } = require("./models");
+const {
+  gettingtopics,
+  gettingArticle,
+  gettingArticleData,
+} = require("./models");
 const express = require("express");
 const endpoints = require("./endpoints.json");
+
 function getTopics(req, res, next) {
   return gettingtopics()
     .then((topics) => {
@@ -17,9 +22,6 @@ function getAllEndpoints(req, res, next) {
 
 function getarticleById(req, res, next) {
   const { article_id } = req.params;
-  if (isNaN(article_id)) {
-  }
-  console.log(article_id);
   return gettingArticle(article_id)
     .then((article) => {
       res.status(200).send({ article: article });
@@ -29,4 +31,11 @@ function getarticleById(req, res, next) {
     });
 }
 
-module.exports = { getTopics, getAllEndpoints, getarticleById };
+function getArticles(req, res, next){
+    return gettingArticleData().then((articles) => {
+        res.status(200).send({articles: articles})
+    }).catch((err) => {next(err)})
+}
+
+
+module.exports = { getTopics, getAllEndpoints, getarticleById, getArticles };

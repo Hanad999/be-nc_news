@@ -3,7 +3,6 @@ const format = require("pg-format");
 
 function gettingtopics() {
   return db.query(`SELECT * FROM topics`).then(({ rows }) => {
-    console.log(rows);
     return rows;
   });
 }
@@ -26,4 +25,28 @@ function gettingArticle(article_id) {
     });
 }
 
-module.exports = { gettingtopics, gettingArticle };
+function gettingArticleData() {
+  return db
+    .query(
+      `
+      SELECT 
+        articles.article_id, 
+        articles.title, 
+        articles.topic, 
+        articles.author, 
+        articles.votes, 
+        articles.created_at, 
+        articles.article_img_url,
+        COUNT(comments.comment_id)::INTEGER AS comment_count
+        FROM articles
+        LEFT JOIN comments ON comments.article_id = articles.article_id
+        GROUP BY articles.article_id
+        ORDER BY articles.created_at DESC;
+    `
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+}
+
+module.exports = { gettingtopics, gettingArticle, gettingArticleData };
