@@ -70,9 +70,21 @@ function gettingAllcommentsById(article_id) {
   });
 }
 
+function addingNewComment(article_id, newComment){
+    const {username, body} = newComment
+    const insertValues = [username, body, article_id]
+    const queryString = format(
+      `INSERT INTO comments (author, body, article_id) 
+       VALUES (%L) RETURNING *`,
+      insertValues
+    );
+    return db.query(queryString).then(({rows}) => {return rows[0]})
+}
+
 module.exports = {
   gettingtopics,
   gettingArticle,
   gettingArticleData,
   gettingAllcommentsById,
+  addingNewComment
 };
