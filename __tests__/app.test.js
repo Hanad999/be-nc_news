@@ -134,3 +134,49 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Respond with the posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "this is new comment",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.addedComment).toMatchObject({
+          article_id: 5,
+          comment_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "this is new comment",
+          created_at: expect.any(String),
+          votes:0
+        });
+      });
+  });
+  test('Respond with 400: Bad Request when given an object with a missing property', () => {
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send({
+        body: "this is new comment"
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  })
+  test("Respond with 400: Bad Request when given an invalid article_id", () => {
+    return request(app)
+      .post("/api/articles/invalid_id/comments")
+      .send({
+        author: "butter_bridge",
+        body: "this is new comment",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});

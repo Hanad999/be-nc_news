@@ -3,6 +3,7 @@ const {
   gettingArticle,
   gettingArticleData,
   gettingAllcommentsById,
+  addingNewComment,
 } = require("./models");
 const express = require("express");
 const endpoints = require("./endpoints.json");
@@ -50,10 +51,19 @@ function getCommentsByaritcle_id(req, res, next) {
     }).catch(err => {next(err)})
 }
 
+function addCommentToArticle(req, res, next){
+    const {article_id} = req.params
+    const newComment = req.body
+    return addingNewComment(article_id, newComment).then((addedComment) => {
+        res.status(201).send({addedComment: addedComment})
+    }).catch(err => {next(err)})
+}
+
 module.exports = {
   getTopics,
-  getAllEndpoints, 
+  getAllEndpoints,
   getarticleById,
   getArticles,
   getCommentsByaritcle_id,
+  addCommentToArticle,
 };

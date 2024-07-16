@@ -5,9 +5,13 @@ const {
   getarticleById,
   getArticles,
   getCommentsByaritcle_id,
+  addCommentToArticle,
 } = require("./controllers");
 const { customErrors, sqlErrors } = require("./error_handlers");
+
 const app = express();
+app.use(express.json());
+
 
 app.get("/api/topics", getTopics);
 
@@ -18,6 +22,8 @@ app.get("/api/articles/:article_id", getarticleById);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByaritcle_id);
+
+app.post("/api/articles/:article_id/comments", addCommentToArticle);
 
 app.use(customErrors);
 
