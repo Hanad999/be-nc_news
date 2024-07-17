@@ -81,10 +81,30 @@ function addingNewComment(article_id, newComment){
     return db.query(queryString).then(({rows}) => {return rows[0]})
 }
 
+function updatingArticleById(article_id, inc_votes){
+    const articleId_intoInt = Number(article_id)
+    return db.query(`
+            UPDATE articles
+            SET votes = votes + $1
+            WHERE article_id = $2
+            RETURNING *;`,
+            [inc_votes, articleId_intoInt])
+            .then(({rows}) => {
+            if(rows.length === 0){
+                return Promise.reject({
+                  status: 404,
+                  msg: "Not Found",
+                });
+            }
+        return rows[0]
+        })
+}
+
 module.exports = {
   gettingtopics,
   gettingArticle,
   gettingArticleData,
   gettingAllcommentsById,
-  addingNewComment
+  addingNewComment,
+  updatingArticleById,
 };

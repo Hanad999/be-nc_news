@@ -148,7 +148,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then((response) => {
         expect(response.body.addedComment).toMatchObject({
           article_id: 5,
-          comment_id: expect.any(Number),
+          comment_id: 19,
           author: "butter_bridge",
           body: "this is new comment",
           created_at: expect.any(String),
@@ -179,4 +179,63 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad Request");
       });
   });
+  test('Respond with 404: Not Found when article_id does not exist', () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "this is new comment",
+    };
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({body}) => {expect(body.msg).toBe('Not Found')})
+  })
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+    test('Respond with 200 and and the updated article', () => {
+        return request(app)
+      .patch("/api/articles/7")
+      .send({ inc_votes: 3 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.newlyUpdated).toMatchObject({
+          article_id: 7,
+          title: "Z",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "I was hungry.",
+          created_at: expect.any(String),
+          votes: 3,
+          article_img_url: expect.any(String)
+        });
+        })  
+    })
+    test("Respond 400 : Bad Request when given an invalid article_id", () => {
+      return request(app)
+        .patch("/api/articles/string")
+        .send({ inc_votes: 7 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+    test("Respond 404 : Not Found when given an non-existent article_id", () => {
+      return request(app)
+        .patch("/api/articles/1111111")
+        .send({ inc_votes: 9 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not Found");
+        });
+    });
+    test("Respond with 400: Bad Request when given an empty object", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({})
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request");
+          });
+    })
 });
