@@ -5,10 +5,10 @@ const {
   gettingAllcommentsById,
   addingNewComment,
   updatingArticleById,
+  deleteBycommentId,
 } = require("./models");
 const express = require("express");
 const endpoints = require("./endpoints.json");
-const comments = require("./db/data/test-data/comments");
 
 function getTopics(req, res, next) {
   return gettingtopics()
@@ -75,6 +75,13 @@ function updateArticle(req, res, next) {
     .catch((err) => next(err));
 }
 
+function deleteComment(req, res, next){
+    const {comment_id} = req.params
+    return deleteBycommentId(comment_id)
+      .then(() => res.status(204).send())
+      .catch((err) => next(err));
+}
+
 module.exports = {
   getTopics,
   getAllEndpoints,
@@ -83,4 +90,5 @@ module.exports = {
   getCommentsByaritcle_id,
   addCommentToArticle,
   updateArticle,
+  deleteComment,
 };
