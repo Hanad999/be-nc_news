@@ -111,5 +111,37 @@
     "errorResponses": {
       "400": "Bad Request"
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates an article by its ID",
+    "parameters": {
+      "article_id": "The unique ID of the article"
+    },
+    "requestBody": {
+      "description": "An object containing the number of votes to increment or decrement",
+      "example": {
+        "inc_votes": 1
+      }
+    },
+    "response": {
+      "status": 200,
+      "description": "The updated article",
+      "example": {
+        "article": {
+          "article_id": 7,
+          "title": "Z",
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "body": "I was hungry.",
+          "created_at": "2024-07-16T14:45:00.000Z",
+          "votes": 3,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      }
+    },
+    "errorResponses": {
+      "400": "Bad Request",
+      "404": "Not Found"
+    }
   }
 }
