@@ -37,13 +37,10 @@ function getarticleById(req, res, next) {
 }
 
 function getArticles(req, res, next) {
-  return gettingArticleData()
-    .then((articles) => {
-      res.status(200).send({ articles: articles });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  const { sort_by, order_by } = req.query;
+  return gettingArticleData(sort_by, order_by)
+    .then((articles) => res.status(200).send({ articles: articles }))
+    .catch((err) => next(err));
 }
 
 function getCommentsByaritcle_id(req, res, next) {

@@ -81,7 +81,6 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles.length).toBe(13);
-        expect(body.articles).toBeSortedBy("created_at", { descending: true });
         body.articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -94,6 +93,46 @@ describe("GET /api/articles", () => {
             comment_count: expect.any(Number),
           });
         });
+      });
+  });
+  test("Respond with an array of article objects sorted by created-at in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("Respond with 200 and articles sorted by created_at", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("Respond 400 : Bad Reques when given an invalid sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=not-valid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("Respond with 200 and array of objects orderd by the given order(DESC or ASC)", () => {
+    return request(app)
+      .get("/api/articles?order_by=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("Respond 400: Bad Request when given and invalid order(DESC or ASC)", () => {
+    return request(app)
+      .get("/api/articles?order_by=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
       });
   });
 });
@@ -157,6 +196,17 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
   test("Respond with 400: Bad Request when given an object with a missing property", () => {
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send({
+        body: "this is new comment",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  test("Respond 400: Bad Request when username property is missing", () => {
     return request(app)
       .post("/api/articles/7/comments")
       .send({

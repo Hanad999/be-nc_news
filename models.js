@@ -26,23 +26,25 @@ function gettingArticle(article_id) {
     });
 }
 
-function gettingArticleData() {
+function gettingArticleData(sort_by = "created_at", order_by = "DESC") {
+
+  const upperOrder_by = order_by.toUpperCase();
+  const validOrder_by = ["ASC", "DESC"];
+  const validSort_by = ["created_at", "votes", "topic", "title", "author"];
+
+  if (!validSort_by.includes(sort_by) ||!validOrder_by.includes(upperOrder_by)){
+    return Promise.reject({ status: 400, msg: "Bad Request" }); }
+
   return db
     .query(
       `
       SELECT 
-        articles.article_id, 
-        articles.title, 
-        articles.topic, 
-        articles.author, 
-        articles.votes, 
-        articles.created_at, 
-        articles.article_img_url,
+        articles.*,
         COUNT(comments.comment_id)::INTEGER AS comment_count
         FROM articles
         LEFT JOIN comments ON comments.article_id = articles.article_id
         GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC;
+        ORDER BY articles.${sort_by} ${upperOrder_by};
     `
     )
     .then(({ rows }) => {
@@ -70,53 +72,61 @@ function gettingAllcommentsById(article_id) {
   });
 }
 
-function addingNewComment(article_id, newComment){
-    const {username, body} = newComment
-    const insertValues = [username, body, article_id]
-    const queryString = format(
-      `INSERT INTO comments (author, body, article_id) 
+function addingNewComment(article_id, newComment) {
+  const { username, body } = newComment;
+  const insertValues = [username, body, article_id];
+  const queryString = format(
+    `INSERT INTO comments (author, body, article_id) 
        VALUES (%L) RETURNING *`,
-      insertValues
-    );
-    return db.query(queryString).then(({rows}) => {return rows[0]})
+    insertValues
+  );
+  return db.query(queryString).then(({ rows }) => {
+    return rows[0];
+  });
 }
 
-function updatingArticleById(article_id, inc_votes){
-    const articleId_intoInt = Number(article_id)
-    return db.query(`
+function updatingArticleById(article_id, inc_votes) {
+  const articleId_intoInt = Number(article_id);
+  return db
+    .query(
+      `
             UPDATE articles
             SET votes = votes + $1
             WHERE article_id = $2
             RETURNING *;`,
-            [inc_votes, articleId_intoInt])
-            .then(({rows}) => {
-            if(rows.length === 0){
-                return Promise.reject({
-                  status: 404,
-                  msg: "Not Found",
-                });
-            }
-        return rows[0]
-        })
-}
-
-function deleteBycommentId(comment_id){
-   if (isNaN(comment_id)) {
-    return Promise.reject({ status: 400, msg: 'Bad Request' });
-  }
-  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [comment_id])
+      [inc_votes, articleId_intoInt]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: 'Not Found' });
+        return Promise.reject({
+          status: 404,
+          msg: "Not Found",
+        });
+      }
+      return rows[0];
+    });
+}
+
+function deleteBycommentId(comment_id) {
+  if (isNaN(comment_id)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [
+      comment_id,
+    ])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
       }
       return rows;
     });
-};
+}
 
-function getAllUsers(){
-    return db.query(`SELECT * FROM users`)
-    .then(({rows}) => {return rows
-})
+function getAllUsers() {
+  return db.query(`SELECT * FROM users`).then(({ rows }) => {
+    return rows;
+  });
 }
 
 module.exports = {
