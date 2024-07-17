@@ -143,5 +143,19 @@
       "400": "Bad Request",
       "404": "Not Found"
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment by the ID",
+    "parameters": {
+      "comment_id": "The unique ID of the comment that is to be deleted"
+    },
+    "response": {
+      "status": 204,
+      "description": "Does not show any content"
+    },
+    "errorResponses": {
+      "400": "Bad Request",
+      "404": "Not Found"
+    }
   }
 }
