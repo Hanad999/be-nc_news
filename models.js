@@ -113,6 +113,12 @@ function deleteBycommentId(comment_id){
     });
 };
 
+function getAllUsers(){
+    return db.query(`SELECT * FROM users`)
+    .then(({rows}) => {return rows
+})
+}
+
 module.exports = {
   gettingtopics,
   gettingArticle,
@@ -121,4 +127,5 @@ module.exports = {
   addingNewComment,
   updatingArticleById,
   deleteBycommentId,
+  getAllUsers,
 };
