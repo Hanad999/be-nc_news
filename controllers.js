@@ -6,6 +6,7 @@ const {
   addingNewComment,
   updatingArticleById,
   deleteBycommentId,
+  getAllUsers,
 } = require("./models");
 const express = require("express");
 const endpoints = require("./endpoints.json");
@@ -61,8 +62,9 @@ function addCommentToArticle(req, res, next) {
   const newComment = req.body;
   return addingNewComment(article_id, newComment)
     .then((addedComment) =>
-      res.status(201).send({ addedComment: addedComment }))
-    .catch(err => next(err));
+      res.status(201).send({ addedComment: addedComment })
+    )
+    .catch((err) => next(err));
 }
 
 function updateArticle(req, res, next) {
@@ -75,11 +77,17 @@ function updateArticle(req, res, next) {
     .catch((err) => next(err));
 }
 
-function deleteComment(req, res, next){
-    const {comment_id} = req.params
-    return deleteBycommentId(comment_id)
-      .then(() => res.status(204).send())
-      .catch((err) => next(err));
+function deleteComment(req, res, next) {
+  const { comment_id } = req.params;
+  return deleteBycommentId(comment_id)
+    .then(() => res.status(204).send())
+    .catch((err) => next(err));
+}
+
+function getUsers(req, res, next) {
+  return getAllUsers()
+    .then((users) => res.status(200).send({ users: users }))
+    .catch((err) => next(err));
 }
 
 module.exports = {
@@ -91,4 +99,5 @@ module.exports = {
   addCommentToArticle,
   updateArticle,
   deleteComment,
+  getUsers,
 };

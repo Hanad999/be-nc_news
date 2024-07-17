@@ -8,6 +8,7 @@ const {
   addCommentToArticle,
   updateArticle,
   deleteComment,
+  getUsers,
 } = require("./controllers");
 const { customErrors, sqlErrors } = require("./error_handlers");
 
@@ -30,6 +31,8 @@ app.post("/api/articles/:article_id/comments", addCommentToArticle);
 app.patch("/api/articles/:article_id",updateArticle);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api/users", getUsers)
 
 app.use(customErrors);
 
