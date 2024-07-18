@@ -61,7 +61,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/3")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toMatchObject({ comment_count: 2 });
+        expect(body.article).toMatchObject({ comment_count: 2 , article_id: 3});
       });
   });
   test("Respond 400: Bad Request, when given invalid article_id", () => {
@@ -132,6 +132,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?order_by=asc")
       .expect(200)
       .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
         expect(body.articles).toBeSortedBy("created_at", { ascending: true });
       });
   });
@@ -148,6 +149,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
+        expect(body.articles.length).toBe(12)
         body.articles.forEach((eachArticle) => {
           expect(eachArticle).toMatchObject({ topic: "mitch" });
         });
@@ -161,6 +163,14 @@ describe("GET /api/articles", () => {
         expect(body.msg).toBe("Not Found");
       });
   });
+  test("Respond with 404: Not Found when given and a topic that exists but has not article", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
