@@ -56,6 +56,14 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
+  test("Respond with an article containig the comment_count property", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({ comment_count: 2 });
+      });
+  });
   test("Respond 400: Bad Request, when given invalid article_id", () => {
     return request(app)
       .get("/api/articles/not-a-number")
@@ -103,7 +111,7 @@ describe("GET /api/articles", () => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("Respond with 200 and articles sorted by created_at", () => {
+  test("Respond with 200 and an array of object articles sorted by given sort_by(votes)", () => {
     return request(app)
       .get("/api/articles?sort_by=votes")
       .expect(200)
