@@ -26,30 +26,44 @@ function gettingArticle(article_id) {
     });
 }
 
-function gettingArticleData(sort_by = "created_at", order_by = "DESC") {
-
+function gettingArticleData(sort_by = "created_at", order_by = "DESC", topic) {
   const upperOrder_by = order_by.toUpperCase();
   const validOrder_by = ["ASC", "DESC"];
   const validSort_by = ["created_at", "votes", "topic", "title", "author"];
 
-  if (!validSort_by.includes(sort_by) ||!validOrder_by.includes(upperOrder_by)){
-    return Promise.reject({ status: 400, msg: "Bad Request" }); }
+  let queryValue = [];
 
-  return db
-    .query(
-      `
+  if (
+    !validSort_by.includes(sort_by) ||
+    !validOrder_by.includes(upperOrder_by)
+  ) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  let sqlString = ` 
       SELECT 
-        articles.*,
-        COUNT(comments.comment_id)::INTEGER AS comment_count
-        FROM articles
-        LEFT JOIN comments ON comments.article_id = articles.article_id
-        GROUP BY articles.article_id
-        ORDER BY articles.${sort_by} ${upperOrder_by};
-    `
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+      articles.*,
+      COUNT(comments.comment_id)::INTEGER AS comment_count
+      FROM articles
+      LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
+  if (topic) {
+    sqlString += ` WHERE articles.topic = $1 `;
+    queryValue.push(topic);
+  }
+
+  sqlString += ` GROUP BY articles.article_id
+                 ORDER BY articles.${sort_by} ${upperOrder_by};`;
+
+  return db.query(sqlString, queryValue).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "Not Found",
+      });
+    }
+    return rows;
+  });
 }
 
 function gettingAllcommentsById(article_id) {

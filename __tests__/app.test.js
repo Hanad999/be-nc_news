@@ -135,6 +135,24 @@ describe("GET /api/articles", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  test("Respond with 200 and articles of the given topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((eachArticle) => {
+          expect(eachArticle).toMatchObject({ topic: "mitch" });
+        });
+      });
+  });
+  test("Respond 404 when given a a topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=Batman")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {

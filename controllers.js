@@ -37,9 +37,11 @@ function getarticleById(req, res, next) {
 }
 
 function getArticles(req, res, next) {
-  const { sort_by, order_by } = req.query;
-  return gettingArticleData(sort_by, order_by)
-    .then((articles) => res.status(200).send({ articles: articles }))
+  const { sort_by, order_by, topic } = req.query;
+  return gettingArticleData(sort_by, order_by, topic)
+    .then((articles) => {
+        // console.log(articles, 'now me')
+        res.status(200).send({ articles: articles })})
     .catch((err) => next(err));
 }
 
