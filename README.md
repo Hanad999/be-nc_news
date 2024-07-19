@@ -52,7 +52,6 @@ that has you testing database should be called test and the file that has your d
 2.Set your database: PGDATABASE = your development database name
 3.Create a .env.test file in the root of your project with the following
 4.Set your database: PGDATABASE = your test database name
-5.In your
 
 **Dependencies**
 dotenv: ^16.0.0
