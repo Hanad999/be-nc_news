@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const {
   getTopics,
   getAllEndpoints,
@@ -13,8 +14,9 @@ const {
 const { customErrors, sqlErrors } = require("./error_handlers");
 
 const app = express();
-app.use(express.json());
+app.use(cors());
 
+app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
@@ -28,11 +30,11 @@ app.get("/api/articles/:article_id/comments", getCommentsByaritcle_id);
 
 app.post("/api/articles/:article_id/comments", addCommentToArticle);
 
-app.patch("/api/articles/:article_id",updateArticle);
+app.patch("/api/articles/:article_id", updateArticle);
 
 app.delete("/api/comments/:comment_id", deleteComment);
 
-app.get("/api/users", getUsers)
+app.get("/api/users", getUsers);
 
 app.use(customErrors);
 
